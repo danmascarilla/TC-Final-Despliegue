@@ -1,12 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import joblib
 import pandas as pd
 import os
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 app = Flask(__name__)
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "data", "src", "models", "model_final_airline.joblib")
 model = joblib.load(MODEL_PATH)
+
+
+@app.route("/form")
+def form():
+    return send_from_directory(".", "form.html")
 
 
 @app.route("/")
@@ -96,6 +103,49 @@ def predict():
         "prediction": prediction,
         "confidence": round(float(probability), 4),
         "satisfied": prediction == "satisfied",
+    })
+
+
+@app.route("/retrain", methods=["POST"])
+def retrain():
+    train_path = os.path.join(os.path.dirname(__file__), "data", "src", "data_sample", "train.csv")
+    test_path  = os.path.join(os.path.dirname(__file__), "data", "src", "data_sample", "test.csv")
+
+    train = pd.read_csv(train_path)
+    test  = pd.read_csv(test_path)
+
+    drop_cols = ["Unnamed: 0", "id"]
+    target = "satisfaction"
+
+    cat_cols = ["Gender", "Customer Type", "Type of Travel", "Class"]
+
+    for df in [train, test]:
+        for col in drop_cols:
+            if col in df.columns:
+                df.drop(columns=col, inplace=True)
+        df.dropna(inplace=True)
+        for col in cat_cols:
+            df[col] = df[col].astype("category").cat.codes
+
+    X_train = train.drop(columns=target)
+    y_train = train[target]
+    X_test  = test.drop(columns=target)
+    y_test  = test[target]
+
+    new_model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    new_model.fit(X_train, y_train)
+
+    accuracy = accuracy_score(y_test, new_model.predict(X_test))
+
+    joblib.dump(new_model, MODEL_PATH)
+
+    global model
+    model = new_model
+
+    return jsonify({
+        "status": "ok",
+        "message": "Modelo reentrenado y guardado",
+        "accuracy": round(accuracy, 4)
     })
 
 

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Airline Satisfaction Predictor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 40px 20px; }
+    h1 { text-align: center; margin-bottom: 30px; color: #1a202c; }
+    form { background: white; max-width: 700px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field.full { grid-column: span 2; }
+    label { font-size: 13px; color: #4a5568; font-weight: bold; }
+    input, select { padding: 8px 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; }
+    input:focus, select:focus { outline: none; border-color: #4299e1; }
+    button { margin-top: 24px; width: 100%; padding: 12px; background: #3182ce; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #2b6cb0; }
+    #result { max-width: 700px; margin: 24px auto 0; background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); display: none; }
+    #result h2 { margin-bottom: 16px; color: #1a202c; }
+    .badge { display: inline-block; padding: 8px 20px; border-radius: 999px; font-size: 18px; font-weight: bold; color: white; }
+    .satisfied { background: #38a169; }
+    .neutral { background: #e53e3e; }
+    .confidence { margin-top: 10px; font-size: 15px; color: #4a5568; }
+  </style>
+</head>
+<body>
+
+<h1>✈️ Airline Satisfaction Predictor</h1>
+
+<form id="predictForm">
+  <div class="grid">
+
+    <div class="field">
+      <label>Género</label>
+      <select name="gender">
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Tipo de cliente</label>
+      <select name="customer_type">
+        <option>Loyal Customer</option>
+        <option>disloyal Customer</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Edad</label>
+      <input type="number" name="age" value="35" min="1" max="120">
+    </div>
+
+    <div class="field">
+      <label>Tipo de viaje</label>
+      <select name="type_of_travel">
+        <option>Business travel</option>
+        <option>Personal Travel</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Clase</label>
+      <select name="class_">
+        <option>Business</option>
+        <option>Eco</option>
+        <option>Eco Plus</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Distancia de vuelo (millas)</label>
+      <input type="number" name="flight_distance" value="1200" min="0">
+    </div>
+
+    <div class="field">
+      <label>WiFi a bordo (1-5)</label>
+      <input type="number" name="inflight_wifi" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Conveniencia horaria (1-5)</label>
+      <input type="number" name="departure_arrival_convenient" value="3" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Facilidad reserva online (1-5)</label>
+      <input type="number" name="ease_online_booking" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Ubicación puerta (1-5)</label>
+      <input type="number" name="gate_location" value="3" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Comida y bebida (1-5)</label>
+      <input type="number" name="food_drink" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Embarque online (1-5)</label>
+      <input type="number" name="online_boarding" value="5" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Comodidad asiento (1-5)</label>
+      <input type="number" name="seat_comfort" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Entretenimiento (1-5)</label>
+      <input type="number" name="inflight_entertainment" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Servicio a bordo (1-5)</label>
+      <input type="number" name="onboard_service" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Espacio piernas (1-5)</label>
+      <input type="number" name="leg_room" value="3" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Manejo de equipaje (1-5)</label>
+      <input type="number" name="baggage_handling" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Check-in (1-5)</label>
+      <input type="number" name="checkin_service" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Servicio en vuelo (1-5)</label>
+      <input type="number" name="inflight_service" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Limpieza (1-5)</label>
+      <input type="number" name="cleanliness" value="4" min="1" max="5">
+    </div>
+
+    <div class="field">
+      <label>Retraso salida (min)</label>
+      <input type="number" name="departure_delay" value="0" min="0">
+    </div>
+
+    <div class="field">
+      <label>Retraso llegada (min)</label>
+      <input type="number" name="arrival_delay" value="0" min="0">
+    </div>
+
+  </div>
+
+  <button type="submit">Predecir satisfacción</button>
+</form>
+
+<div style="max-width:700px; margin: 16px auto; text-align:right;">
+  <button id="retrainBtn" style="padding:10px 20px; background:#718096; color:white; border:none; border-radius:8px; font-size:14px; cursor:pointer;">Reentrenar modelo</button>
+</div>
+
+<div id="result">
+  <h2>Resultado</h2>
+  <div id="badge"></div>
+  <div class="confidence" id="conf"></div>
+</div>
+
+<script>
+  document.getElementById("predictForm").addEventListener("submit", async (e) => {
+    e.preventDefault()
+    const data = new FormData(e.target)
+    const params = new URLSearchParams(data)
+
+    const res = await fetch(`http://localhost:5000/predict?${params}`)
+    const json = await res.json()
+
+    const resultDiv = document.getElementById("result")
+    const badge = document.getElementById("badge")
+    const conf = document.getElementById("conf")
+
+    badge.textContent = json.prediction
+    badge.className = "badge " + (json.satisfied ? "satisfied" : "neutral")
+    conf.textContent = `Confianza: ${(json.confidence * 100).toFixed(1)}%`
+    resultDiv.style.display = "block"
+  })
+
+  document.getElementById("retrainBtn").addEventListener("click", async () => {
+    const btn = document.getElementById("retrainBtn")
+    btn.textContent = "Reentrenando..."
+    btn.disabled = true
+
+    const res = await fetch("http://localhost:5000/retrain", { method: "POST" })
+    const json = await res.json()
+
+    btn.textContent = "Reentrenar modelo"
+    btn.disabled = false
+    alert(`Modelo reentrenado. Accuracy: ${(json.accuracy * 100).toFixed(2)}%`)
+  })
+</script>
+
+</body>
+</html>
