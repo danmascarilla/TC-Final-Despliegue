@@ -175,7 +175,7 @@
     const data = new FormData(e.target)
     const params = new URLSearchParams(data)
 
-    const res = await fetch(`http://localhost:5000/predict?${params}`)
+    const res = await fetch(`/predict?${params}`)
     const json = await res.json()
 
     const resultDiv = document.getElementById("result")
@@ -193,7 +193,7 @@
     btn.textContent = "Reentrenando..."
     btn.disabled = true
 
-    const res = await fetch("http://localhost:5000/retrain", { method: "POST" })
+    const res = await fetch("/retrain", { method: "POST" })
     const json = await res.json()
 
     btn.textContent = "Reentrenar modelo"
